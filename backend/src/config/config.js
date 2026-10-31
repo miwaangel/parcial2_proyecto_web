@@ -9,6 +9,8 @@ const base = {
   port: Number(process.env.DB_PORT) || 3306,
   dialect: 'mysql',
   timezone: '-06:00',
+  seederStorage: 'sequelize',      
+  seederStorageTableName: 'SequelizeData',
   define: {
     charset: 'utf8mb4',
     collate: 'utf8mb4_unicode_ci',

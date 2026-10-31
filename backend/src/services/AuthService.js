@@ -4,32 +4,23 @@ const jwt = require('jsonwebtoken');
 const Config = require('../app/Config');
 const HttpError = require('../app/HttpError');
 const CaptchaService = require('./CaptchaService');
+const { Usuario } = require('../models');
 
 /**
  * Login de administradores con JWT (issue #10) + captcha (issue #11).
- *
- * TEMPORAL: valida contra ADMIN_USER / ADMIN_PASS_HASH del .env.
- * Cuando Angel suba el modelo Usuario, solo se cambia buscarUsuario():
- *
- *   const { Usuario } = require('../models');
- *   return Usuario.findOne({ where: { usuario, activo: true } });
- *
- * El objeto que regresa buscarUsuario() tiene los campos del contrato:
- * { id, usuario, passwordHash, nombre }.
+ * Los usuarios vienen de la tabla `usuarios` (el admin inicial lo crea el seeder).
  */
 class AuthService {
   constructor(captchaService = new CaptchaService()) {
     this.captchaService = captchaService;
   }
 
+  /**
+   * Usuario activo con su passwordHash.
+   * El modelo oculta passwordHash por defecto; el scope 'conPassword' lo incluye.
+   */
   async buscarUsuario(usuario) {
-    if (usuario !== Config.adminUser || !Config.adminPassHash) return null;
-    return {
-      id: 1,
-      usuario: Config.adminUser,
-      passwordHash: Config.adminPassHash,
-      nombre: 'Administrador',
-    };
+    return Usuario.scope('conPassword').findOne({ where: { usuario, activo: true } });
   }
 
   /**

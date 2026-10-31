@@ -31,15 +31,6 @@ class Config {
     return process.env.RECAPTCHA_SECRET || '';
   }
 
-  /** Usuario temporal mientras Angel sube el modelo Usuario (issue #6). */
-  static get adminUser() {
-    return process.env.ADMIN_USER || 'admin';
-  }
-
-  static get adminPassHash() {
-    return process.env.ADMIN_PASS_HASH || '';
-  }
-
   static get env() {
     return process.env.NODE_ENV || 'development';
   }

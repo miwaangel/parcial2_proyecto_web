@@ -3,15 +3,15 @@
 process.env.NODE_ENV = 'test';
 process.env.JWT_SECRET = 'secreto_de_prueba';
 process.env.RECAPTCHA_SECRET = 'llave_secreta_de_prueba';
-process.env.ADMIN_USER = 'admin';
 
-const { test, before, after, describe } = require('node:test');
+const { test, before, after, describe, mock } = require('node:test');
 const assert = require('node:assert');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const App = require('../src/app/App');
 const CaptchaService = require('../src/services/CaptchaService');
+const { Usuario } = require('../src/models');
 
 const PASSWORD = 'Admin123!';
 const CAPTCHA_OK = 'token-captcha-valido';
@@ -22,7 +22,19 @@ const fetchReal = globalThis.fetch;
 const llamadasGoogle = [];
 
 before(() => {
-  process.env.ADMIN_PASS_HASH = bcrypt.hashSync(PASSWORD, 4);
+  // Tabla usuarios simulada: un admin activo y uno desactivado (no se necesita MySQL)
+  const usuarios = [
+    { id: 1, usuario: 'admin', nombre: 'Administrador', activo: true, passwordHash: bcrypt.hashSync(PASSWORD, 4) },
+    { id: 2, usuario: 'baja', nombre: 'Dado de baja', activo: false, passwordHash: bcrypt.hashSync(PASSWORD, 4) },
+  ];
+  mock.method(Usuario, 'scope', (nombre) => {
+    assert.strictEqual(nombre, 'conPassword', 'el login debe pedir el passwordHash con el scope');
+    return {
+      findOne: async ({ where }) => usuarios.find(
+        (u) => u.usuario === where.usuario && u.activo === where.activo,
+      ) || null,
+    };
+  });
 
   // Simula Google: solo CAPTCHA_OK es valido. Las demas URL usan el fetch real.
   globalThis.fetch = async (url, opciones) => {
@@ -39,6 +51,7 @@ before(() => {
 });
 
 after(() => {
+  mock.restoreAll();
   globalThis.fetch = fetchReal;
   server.close();
 });
@@ -81,6 +94,11 @@ describe('POST /api/auth/login', () => {
     const res = await login({ usuario: 'nadie', password: PASSWORD, captchaToken: CAPTCHA_OK });
     assert.strictEqual(res.status, 401);
     assert.deepStrictEqual(await res.json(), { error: 'Usuario o password incorrectos' });
+  });
+
+  test('usuario desactivado -> 401', async () => {
+    const res = await login({ usuario: 'baja', password: PASSWORD, captchaToken: CAPTCHA_OK });
+    assert.strictEqual(res.status, 401);
   });
 
   test('faltan campos -> 400', async () => {

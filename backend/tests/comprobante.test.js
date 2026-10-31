@@ -1,14 +1,24 @@
 // Pruebas del comprobante PDF con QR y del patron Factory (issue #15). Correr con: npm test
 process.env.NODE_ENV = 'test';
 
-const { test, before, after, describe } = require('node:test');
+const { test, before, after, describe, mock } = require('node:test');
 const assert = require('node:assert');
 
 const App = require('../src/app/App');
 const DocumentoFactory = require('../src/services/documentos/DocumentoFactory');
 const GeneradorDocumento = require('../src/services/documentos/GeneradorDocumento');
 const ComprobantePdf = require('../src/services/documentos/ComprobantePdf');
-const solicitud = require('../src/mocks/solicitudEjemplo');
+const { Solicitud } = require('../src/models');
+const solicitud = require('./solicitudEjemplo');
+
+// Modelo simulado: no se necesita MySQL para correr las pruebas
+before(() => {
+  mock.method(Solicitud, 'findByPk', async (id, opciones) => {
+    assert.deepStrictEqual(opciones.include, ['municipio', 'nivel', 'asunto']);
+    return Number(id) === solicitud.id ? { get: () => ({ ...solicitud }) } : null;
+  });
+});
+after(() => mock.restoreAll());
 
 describe('DocumentoFactory (patron Factory)', () => {
   test('crear("comprobante") regresa un GeneradorDocumento de tipo PDF', () => {

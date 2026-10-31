@@ -1,19 +1,13 @@
 const HttpError = require('../app/HttpError');
 const DocumentoFactory = require('./documentos/DocumentoFactory');
-const solicitudEjemplo = require('../mocks/solicitudEjemplo');
+const { Solicitud } = require('../models');
 
 const CURP_REGEX = /^[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]\d$/;
 
 /**
  * Arma el comprobante de una solicitud (issue #15).
- *
- * TEMPORAL: usa la solicitud de ejemplo del contrato. Cuando Angel suba el modelo
- * Solicitud (issue #6), solo se cambia buscarSolicitud():
- *
- *   const { Solicitud } = require('../models');
- *   return Solicitud.findByPk(id, { include: ['municipio', 'nivel', 'asunto'] });
- *
- * (los alias del include deben ser los del contrato: municipio, nivel, asunto)
+ * Los alias del include (municipio, nivel, asunto) son los definidos en models/Solicitud.js
+ * y coinciden con el JSON del contrato.
  */
 class ComprobanteService {
   constructor(factory = DocumentoFactory) {
@@ -21,7 +15,8 @@ class ComprobanteService {
   }
 
   async buscarSolicitud(id) {
-    return Number(id) === solicitudEjemplo.id ? solicitudEjemplo : null;
+    const solicitud = await Solicitud.findByPk(id, { include: ['municipio', 'nivel', 'asunto'] });
+    return solicitud ? solicitud.get({ plain: true }) : null;
   }
 
   /**

@@ -3,6 +3,7 @@ const AuthMiddleware = require('../middlewares/AuthMiddleware');
 const HealthRoutes = require('./HealthRoutes');
 const AuthRoutes = require('./AuthRoutes');
 const SolicitudRoutes = require('./SolicitudRoutes');
+const { CatalogoRoutes, CatalogoAdminRoutes } = require('./CatalogoRoutes');
 
 /**
  * Router principal: monta cada grupo de rutas bajo /api.
@@ -24,9 +25,11 @@ class ApiRouter {
     this.router.use('/health', new HealthRoutes().router);
     this.router.use('/auth', new AuthRoutes().router);
     this.router.use('/solicitudes', new SolicitudRoutes().router);
+    this.router.use('/catalogos', new CatalogoRoutes().router);
 
     // Privadas: todo /api/admin/* requiere token
     this.router.use('/admin', AuthMiddleware.verificar);
+    this.router.use('/admin/catalogos', new CatalogoAdminRoutes().router);
   }
 }
 

@@ -54,6 +54,23 @@ El usuario sale de la tabla `usuarios` (`Usuario.scope('conPassword')`, solo act
 Probar (después de `npm run db:reset`): toma un `id` y su `curp` de la tabla `solicitudes` y abre
 `http://localhost:3000/api/solicitudes/<id>/comprobante?curp=<curp>`
 
+## Catálogos (municipios, niveles, asuntos)
+| Método | Ruta | Respuesta |
+|---|---|---|
+| GET | `/api/catalogos/:tipo` | Solo activos, por nombre → para los selects del formulario |
+| GET | `/api/admin/catalogos/:tipo` | Todos, incluye inactivos |
+| POST | `/api/admin/catalogos/:tipo` `{ nombre }` | `201` · `400` sin nombre · `409` repetido |
+| PUT | `/api/admin/catalogos/:tipo/:id` `{ nombre?, activo? }` | `200` · `404` · `409` repetido |
+| DELETE | `/api/admin/catalogos/:tipo/:id` | `204` · `409` si tiene solicitudes (mejor desactivarlo) |
+
+`:tipo` = `municipios` | `niveles` | `asuntos`. Una sola clase (`CatalogoService`) atiende los tres.
+
+## Errores del ORM
+`ErrorMiddleware.traducirSequelize` convierte: validación del modelo → 400, valor único repetido → 409, borrar algo referenciado → 409.
+
+## Pruebas
+`npm test` **no necesita MySQL**: los modelos se simulan con `mock.method` de `node:test`.
+
 ## Patrones de diseño
 | Patrón | Dónde | Para qué |
 |---|---|---|

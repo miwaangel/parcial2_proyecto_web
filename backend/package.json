@@ -11,7 +11,8 @@
     "db:seed": "sequelize-cli db:seed:all",
     "db:reset": "sequelize-cli db:seed:undo:all && sequelize-cli db:migrate:undo:all && sequelize-cli db:migrate && sequelize-cli db:seed:all",
     "db:test": "node src/scripts/probarConexion.js",
-    "db:undo": "sequelize-cli db:migrate:undo:all"
+    "db:undo": "sequelize-cli db:migrate:undo:all",
+    "db:test-turnos": "node src/scripts/probarTurnos.js"
   },
   "keywords": [],
   "author": "",

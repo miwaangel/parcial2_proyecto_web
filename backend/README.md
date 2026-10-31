@@ -33,6 +33,21 @@ const HttpError = require('../app/HttpError');
 throw HttpError.notFound('No existe la solicitud');   // → 404 { "error": "No existe la solicitud" }
 ```
 
+## Autenticación (login + captcha)
+`POST /api/auth/login` con `{ usuario, password, captchaToken }` → `{ token, usuario: { id, usuario, nombre } }`.
+
+1. `CaptchaService` valida `captchaToken` con Google **antes** de revisar el password (400 si falla).
+2. `AuthService` compara el password con bcrypt y firma un JWT (`JWT_EXPIRES_IN`, default 8h).
+3. `AuthMiddleware` está montado en `routes/index.js` para **todo** `/api/admin/*`: cualquier ruta que se monte bajo `/admin` ya exige `Authorization: Bearer <token>`.
+
+**Mientras no exista el modelo `Usuario`** el login usa `ADMIN_USER` / `ADMIN_PASS_HASH` del `.env`:
+```bash
+npm run hash -- Admin123      # copia el resultado en ADMIN_PASS_HASH
+```
+Cuando Angel suba el modelo, solo se cambia `AuthService.buscarUsuario()` (el comentario dice cómo).
+
+**reCAPTCHA:** el `.env.example` trae la llave secreta de **prueba** de Google (siempre aprueba). Para el front, la llave pública de prueba es `6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI`. Para la entrega, registrar el sitio en https://www.google.com/recaptcha/admin (v2 "No soy un robot", dominio `localhost`) y cambiar ambas llaves.
+
 ## Agregar un recurso nuevo
 1. `services/XService.js` — clase con la lógica.
 2. `controllers/XController.js` — `class XController extends BaseController`.

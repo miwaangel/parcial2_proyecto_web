@@ -46,3 +46,22 @@ npm run dev
 2. Antes de empezar: `git pull origin develop`.
 3. Al terminar un issue: Pull Request a `develop` con `Closes #N`.
 4. Otro integrante revisa y hace merge.
+
+
+## Base de datos
+
+Requisitos: MySQL encendido (XAMPP).
+
+```bash
+cd backend
+npm install
+cp .env.example .env      # en Windows: Copy-Item .env.example .env
+npm run db:create         # crea la base ticket_turno
+npm run db:migrate        # crea las tablas
+npm run db:seed           # datos iniciales (municipios, admin)
+npm run db:test           # prueba la conexión
+```
+
+### Patrón Singleton
+`backend/src/config/Database.js` crea **una sola** conexión de Sequelize para toda la aplicación.
+Se obtiene con `Database.getInstance()`; el constructor lanza un error si se intenta crear una segunda instancia.

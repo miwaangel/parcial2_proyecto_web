@@ -2,6 +2,7 @@ const { Router } = require('express');
 const AuthMiddleware = require('../middlewares/AuthMiddleware');
 const HealthRoutes = require('./HealthRoutes');
 const AuthRoutes = require('./AuthRoutes');
+const SolicitudRoutes = require('./SolicitudRoutes');
 
 /**
  * Router principal: monta cada grupo de rutas bajo /api.
@@ -22,6 +23,7 @@ class ApiRouter {
     // Publicas
     this.router.use('/health', new HealthRoutes().router);
     this.router.use('/auth', new AuthRoutes().router);
+    this.router.use('/solicitudes', new SolicitudRoutes().router);
 
     // Privadas: todo /api/admin/* requiere token
     this.router.use('/admin', AuthMiddleware.verificar);

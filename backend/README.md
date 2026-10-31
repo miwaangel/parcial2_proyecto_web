@@ -48,6 +48,21 @@ Cuando Angel suba el modelo, solo se cambia `AuthService.buscarUsuario()` (el co
 
 **reCAPTCHA:** el `.env.example` trae la llave secreta de **prueba** de Google (siempre aprueba). Para el front, la llave pública de prueba es `6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI`. Para la entrega, registrar el sitio en https://www.google.com/recaptcha/admin (v2 "No soy un robot", dominio `localhost`) y cambiar ambas llaves.
 
+## Comprobante PDF con QR
+`GET /api/solicitudes/:id/comprobante?curp=X` → descarga `comprobante-turno-N.pdf`.
+
+- La CURP es obligatoria: así nadie descarga el comprobante de otra persona cambiando el `id`. Si no coincide → 404 (mismo mensaje que si no existe).
+- El PDF (PDFKit) lleva logo, número de turno, municipio, datos de la solicitud y un **QR que contiene solo la CURP** (`qrcode`).
+- **Mientras no exista el modelo `Solicitud`** usa `src/mocks/solicitudEjemplo.js` (id 15, CURP `PEGJ050312HCLRRN09`). Cuando Angel suba el modelo, solo se cambia `ComprobanteService.buscarSolicitud()` (el comentario dice cómo).
+
+Probar: http://localhost:3000/api/solicitudes/15/comprobante?curp=PEGJ050312HCLRRN09
+
+## Patrones de diseño
+| Patrón | Dónde | Para qué |
+|---|---|---|
+| **Factory** | `services/documentos/DocumentoFactory.js` | `DocumentoFactory.crear('comprobante')` regresa un `GeneradorDocumento` (clase abstracta). El controlador no sabe qué clase concreta genera el archivo; agregar otro documento = clase nueva + una línea en `TIPOS`. |
+| **Singleton** | `config/Database.js` (Angel) | `Database.getInstance()`: una sola conexión a MySQL para toda la app. |
+
 ## Agregar un recurso nuevo
 1. `services/XService.js` — clase con la lógica.
 2. `controllers/XController.js` — `class XController extends BaseController`.

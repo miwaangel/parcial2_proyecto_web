@@ -121,8 +121,9 @@ Validación de CURP (regex): `^[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]\d$`
 | 400 | Datos inválidos (falta un campo, CURP mal formada, captcha inválido) |
 | 401 | Sin token, token inválido o expirado, usuario/contraseña incorrectos |
 | 404 | No existe el registro |
-| 409 | Conflicto (ej. nombre de catálogo repetido) |
+| 409 | Conflicto (ej. nombre de catálogo repetido, modificar una solicitud ya resuelta) |
 | 500 | Error del servidor |
+| 502 | No se pudo verificar el captcha con Google (reintentar) |
 
 ---
 
@@ -139,8 +140,8 @@ Rutas `/admin/*` requieren header: `Authorization: Bearer <token>`
 | GET | `/catalogos/niveles` | — | `[catálogo]` |
 | GET | `/catalogos/asuntos` | — | `[catálogo]` |
 | POST | `/solicitudes` | Solicitud sin `id`, `turno`, `estatus`; con `municipioId`, `nivelId`, `asuntoId` | `201` + Solicitud (ya con turno) |
-| GET | `/solicitudes/buscar?curp=X&turno=N&municipioId=M` | — | Solicitud o `404` |
-| PUT | `/solicitudes/:id` | campos a modificar + `curp` y `turno` para verificar | Solicitud actualizada o `404` si no coinciden |
+| GET | `/solicitudes/buscar?curp=X&turno=N&municipioId=M` | — | Solicitud o `404` (`400` si CURP + turno existe en varios municipios y no se mandó `municipioId`) |
+| PUT | `/solicitudes/:id` | campos a modificar + `curp` y `turno` para verificar | Solicitud actualizada o `404` si no coinciden; `409` si ya está Resuelta. No cambia `curp`, `municipioId`, `turno` ni `estatus` |
 | GET | `/solicitudes/:id/comprobante?curp=X` | — | Archivo PDF (`application/pdf`) |
 | POST | `/auth/login` | `{ "usuario", "password", "captchaToken" }` | `{ "token", "usuario": { "id", "usuario", "nombre" } }` |
 
@@ -149,10 +150,10 @@ Rutas `/admin/*` requieren header: `Authorization: Bearer <token>`
 ### Administración (requieren token)
 | Método | Ruta | Body / Query | Respuesta |
 |---|---|---|---|
-| GET | `/admin/solicitudes?q=texto` | busca por CURP o nombre/apellidos | `[Solicitud]` |
+| GET | `/admin/solicitudes?q=texto&municipioId=M&estatus=E` | busca por CURP o nombre/apellidos; `municipioId` y `estatus` opcionales | `[Solicitud]` |
 | GET | `/admin/solicitudes/:id` | — | Solicitud |
 | POST | `/admin/solicitudes` | igual que el POST público | `201` + Solicitud |
-| PUT | `/admin/solicitudes/:id` | campos a modificar | Solicitud |
+| PUT | `/admin/solicitudes/:id` | campos a modificar (incluye `estatus`); si cambia `municipioId` se asigna el siguiente turno de ese municipio | Solicitud |
 | DELETE | `/admin/solicitudes/:id` | — | `204` |
 | PATCH | `/admin/solicitudes/:id/estatus` | `{ "estatus": "Resuelto" }` | Solicitud |
 | GET | `/admin/catalogos/:tipo` | `tipo` = municipios \| niveles \| asuntos | `[catálogo]` (incluye inactivos) |

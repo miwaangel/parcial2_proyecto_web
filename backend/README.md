@@ -25,6 +25,13 @@ server.js → App → routes/ → controllers/ → services/ → models/ (Sequel
 | `middlewares/` | Se ejecutan antes/después de los controladores | `ErrorMiddleware` |
 | `config/`, `models/`, `migrations/`, `seeders/` | Base de datos (Angel) | `Database.getInstance()` |
 
+## Documentación de la API (Swagger)
+Con el servidor corriendo: **http://localhost:3000/api/docs** (la especificación en JSON está en `/api/docs.json`).
+
+- Cada ruta se documenta con un comentario `@openapi` en su archivo de `src/routes/`; las piezas comunes (esquemas, errores, token) están en `app/SwaggerConfig.js`.
+- Para probar rutas de admin: ejecuta `POST /auth/login` con *Try it out*, copia el `token`, clic en **Authorize** y pégalo.
+- **Al agregar una ruta nueva, agrega su bloque `@openapi`** (hay una prueba que revisa que todas estén documentadas).
+
 ## Errores
 No se usa `try/catch` en controladores: se lanza un `HttpError` y `ErrorMiddleware` responde con el formato del contrato.
 
@@ -53,6 +60,28 @@ El usuario sale de la tabla `usuarios` (`Usuario.scope('conPassword')`, solo act
 
 Probar (después de `npm run db:reset`): toma un `id` y su `curp` de la tabla `solicitudes` y abre
 `http://localhost:3000/api/solicitudes/<id>/comprobante?curp=<curp>`
+
+## Solicitudes de turno
+El **turno lo asigna siempre el servidor** (`TurnoService` de Angel): aunque el cliente mande `turno`, `estatus` o `id`, se ignoran.
+
+**Públicas (#13)**
+| Método | Ruta | Notas |
+|---|---|---|
+| POST | `/api/solicitudes` | `201` + Solicitud con su turno. Nivel, asunto y municipio deben existir y estar activos |
+| GET | `/api/solicitudes/buscar?curp=X&turno=N&municipioId=M` | `municipioId` opcional; si CURP + turno se repite en dos municipios → `400` pide el municipio |
+| PUT | `/api/solicitudes/:id` | Body: cambios + `curp` y `turno` actuales. No se puede cambiar CURP, municipio, turno ni estatus. `404` si no coinciden, `409` si ya está resuelta |
+
+**Administración (#14)** — requieren token
+| Método | Ruta | Notas |
+|---|---|---|
+| GET | `/api/admin/solicitudes?q=&municipioId=&estatus=` | `q` busca cada palabra en CURP, nombre, apellidos y nombre de quien tramita ("juan perez") |
+| GET | `/api/admin/solicitudes/:id` | |
+| POST | `/api/admin/solicitudes` | Igual que el público |
+| PUT | `/api/admin/solicitudes/:id` | Cualquier dato + `estatus`. Si cambia el municipio, recibe el siguiente turno de ese municipio |
+| PATCH | `/api/admin/solicitudes/:id/estatus` | `{ "estatus": "Pendiente" \| "Resuelto" }` |
+| DELETE | `/api/admin/solicitudes/:id` | `204` |
+
+Validaciones (`SolicitudValidator`): CURP con el formato del contrato, nombres solo letras, teléfono/celular de 10 dígitos, correo válido. Normaliza espacios, CURP en mayúsculas, correo en minúsculas y teléfonos solo con dígitos.
 
 ## Catálogos (municipios, niveles, asuntos)
 | Método | Ruta | Respuesta |

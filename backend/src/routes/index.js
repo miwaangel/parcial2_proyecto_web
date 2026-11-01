@@ -2,7 +2,7 @@ const { Router } = require('express');
 const AuthMiddleware = require('../middlewares/AuthMiddleware');
 const HealthRoutes = require('./HealthRoutes');
 const AuthRoutes = require('./AuthRoutes');
-const SolicitudRoutes = require('./SolicitudRoutes');
+const { SolicitudRoutes, SolicitudAdminRoutes } = require('./SolicitudRoutes');
 const { CatalogoRoutes, CatalogoAdminRoutes } = require('./CatalogoRoutes');
 
 /**
@@ -30,6 +30,7 @@ class ApiRouter {
     // Privadas: todo /api/admin/* requiere token
     this.router.use('/admin', AuthMiddleware.verificar);
     this.router.use('/admin/catalogos', new CatalogoAdminRoutes().router);
+    this.router.use('/admin/solicitudes', new SolicitudAdminRoutes().router);
   }
 }
 

@@ -119,7 +119,7 @@ describe('POST /api/auth/login', () => {
 });
 
 describe('AuthMiddleware en /api/admin/*', () => {
-  const admin = (headers = {}) => fetch(`${base}/admin/solicitudes`, { headers });
+  const admin = (headers = {}) => fetch(`${base}/admin/ruta-de-prueba`, { headers });
 
   test('sin token -> 401', async () => {
     const res = await admin();
@@ -146,7 +146,7 @@ describe('AuthMiddleware en /api/admin/*', () => {
     assert.strictEqual(res.status, 401);
   });
 
-  test('token valido pasa el middleware (404 porque la ruta aun no existe)', async () => {
+  test('token valido pasa el middleware (404 porque la ruta de prueba no existe)', async () => {
     const { token } = await (await login({ usuario: 'admin', password: PASSWORD, captchaToken: CAPTCHA_OK })).json();
     const res = await admin({ Authorization: `Bearer ${token}` });
     assert.strictEqual(res.status, 404);

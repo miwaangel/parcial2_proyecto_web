@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 
 const Config = require('./Config');
+const SwaggerConfig = require('./SwaggerConfig');
 const ApiRouter = require('../routes');
 const ErrorMiddleware = require('../middlewares/ErrorMiddleware');
 
@@ -24,6 +25,7 @@ class App {
   }
 
   configurarRutas() {
+    SwaggerConfig.montar(this.app);
     this.app.use('/api', new ApiRouter().router);
   }
 

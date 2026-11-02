@@ -1,16 +1,27 @@
-# React + Vite
+# Frontend — Ticket de turno
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Desarrollo local
 
-Currently, two official plugins are available:
+```bash
+npm install
+copy .env.example .env
+npm run dev
+```
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Para una demostración sin MySQL, usa `VITE_USE_MOCKS=true` en `.env`. El usuario
+de demostración es `admin` y la contraseña `admin123`. Los servicios mantienen
+la misma forma de datos que el contrato de la API.
 
-## React Compiler
+Para integración con el backend, usa `VITE_USE_MOCKS=false` y verifica que
+`VITE_API_URL` apunte a `http://localhost:3000/api`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Validación
 
-## Expanding the ESLint configuration
+```bash
+npm run lint
+npm run build
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Flujo manual de humo: solicitar un turno, consultarlo por CURP y turno,
+modificarlo, iniciar sesión, revisar el dashboard, cambiar el estatus de una
+solicitud y crear/editar/desactivar un catálogo.

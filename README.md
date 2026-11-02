@@ -26,7 +26,9 @@ docs/       Contrato de API y documentación
 Antes de programar, leer **[docs/contrato-api.md](docs/contrato-api.md)**.
 
 ## Cómo correrlo
-_Se completa cuando estén listos el backend y el frontend._
+En desarrollo, el frontend puede ejecutarse con mocks para probar el flujo
+completo sin una base de datos. Para integración real, configura MySQL y usa
+`VITE_USE_MOCKS=false`.
 
 ```bash
 # Backend
@@ -40,6 +42,19 @@ cd frontend
 npm install
 npm run dev
 ```
+
+En otra terminal:
+
+```bash
+# Frontend
+cd frontend
+npm install
+copy .env.example .env
+# Para demo local cambia VITE_USE_MOCKS=true
+npm run dev
+```
+
+Credenciales de demostración con mocks: `admin` / `admin123`.
 
 ## Flujo de trabajo
 1. Cada quien trabaja en su rama (`miwa`, `orlando`, `alanis`).

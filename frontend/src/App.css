@@ -8,6 +8,13 @@
 .toolbar { display: flex; flex-wrap: wrap; gap: .75rem; align-items: end; margin: 1.5rem 0; }
 .toolbar label { display: grid; gap: .35rem; color: #526078; font-size: .9rem; }
 .toolbar input, .toolbar select { padding: .65rem; border: 1px solid #cbd5e1; border-radius: .4rem; background: #fff; }
+.page-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.page-heading h1, .page-heading h2 { margin: 0; }
+.row-actions { display: flex; gap: .4rem; }
+.row-actions button, .close { border: 0; background: transparent; color: #1363df; cursor: pointer; }
+.modal-backdrop { position: fixed; inset: 0; z-index: 4; display: grid; place-items: center; padding: 1rem; background: #102a4388; }
+.modal { width: min(800px, 100%); max-height: 90vh; overflow-y: auto; }
+.close { font-size: 1.7rem; }
 .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0; }
 .stat { padding: 1.25rem; background: #fff; border: 1px solid #e1e7ef; border-radius: .7rem; }
 .stat strong { display: block; font-size: 2rem; margin-top: .5rem; }

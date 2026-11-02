@@ -43,3 +43,5 @@
 .captcha input { width: auto; }
 @media (max-width: 700px) { .stat-grid, .catalog-grid { grid-template-columns: 1fr; } }
 @media (max-width: 700px) { .form-grid { grid-template-columns: 1fr; } }
+@media (max-width: 700px) { .toolbar { align-items: stretch; flex-direction: column; } .toolbar label, .toolbar input, .toolbar select, .toolbar .button { width: 100%; } .result-heading { flex-direction: column; } .result-card dl div { align-items: flex-start; flex-direction: column; gap: .2rem; } .result-card dd { text-align: left; } }
+@media print { .public-header, footer, .actions, .form-page > h1, .form-page > p { display: none; } .content { padding: 0; } .card { box-shadow: none; } }

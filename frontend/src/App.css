@@ -15,6 +15,10 @@
 .modal-backdrop { position: fixed; inset: 0; z-index: 4; display: grid; place-items: center; padding: 1rem; background: #102a4388; }
 .modal { width: min(800px, 100%); max-height: 90vh; overflow-y: auto; }
 .close { font-size: 1.7rem; }
+.catalog-tabs { display: flex; flex-wrap: wrap; gap: .5rem; border-bottom: 1px solid #e1e7ef; margin: 1.5rem 0 0; }
+.catalog-tabs button { border: 0; border-bottom: 3px solid transparent; background: transparent; padding: .75rem; cursor: pointer; color: #526078; }
+.catalog-tabs button.active { border-bottom-color: #1363df; color: #1363df; font-weight: 700; }
+.catalog-form { margin-top: 1rem; }
 .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0; }
 .stat { padding: 1.25rem; background: #fff; border: 1px solid #e1e7ef; border-radius: .7rem; }
 .stat strong { display: block; font-size: 2rem; margin-top: .5rem; }

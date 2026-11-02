@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { buscarSolicitud, actualizarSolicitud } from '../services/solicitudService'
+import { descargarComprobante } from '../services/comprobanteService'
 import { SolicitudResult } from './PublicSearchPage'
 
 export default function PublicEditPage() {
@@ -25,7 +26,7 @@ export default function PublicEditPage() {
     <form className="card form" onSubmit={save}><div className="form-grid">
       {['nombreCompleto', 'nombre', 'paterno', 'materno', 'telefono', 'celular', 'correo'].map((field) => <label key={field}>{labels[field]}<input required={['nombreCompleto', 'nombre', 'paterno', 'celular', 'correo'].includes(field)} type={field === 'correo' ? 'email' : 'text'} value={form[field] || ''} onChange={(e) => setForm({ ...form, [field]: e.target.value })} /></label>)}
     </div>{error && <p className="error">{error}</p>}{saved && <p className="success">Cambios guardados correctamente.</p>}<button className="button">Guardar cambios</button></form>
-    <div className="actions"><button className="button secondary" onClick={() => window.print()}>Descargar comprobante</button><SolicitudResult solicitud={solicitud} /></div>
+    <div className="actions"><button className="button secondary" onClick={() => descargarComprobante(solicitud)}>Descargar comprobante</button><SolicitudResult solicitud={solicitud} /></div>
   </section>
 }
 

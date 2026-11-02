@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { crearSolicitud } from '../services/solicitudService'
 import { listarCatalogo } from '../services/catalogoService'
+import { descargarComprobante } from '../services/comprobanteService'
 
 const initialForm = {
   curp: '', nombreCompleto: '', nombre: '', paterno: '', materno: '',
@@ -39,7 +40,7 @@ export default function PublicRequestPage() {
       <p className="eyebrow">Solicitud registrada</p><h1>Tu turno es {result.turno}</h1>
       <p>Guarda tu CURP y turno para consultar o modificar tu solicitud.</p>
       <div className="result-details"><strong>{result.nombreCompleto}</strong><span>CURP: {result.curp}</span><span>Municipio: {result.municipio?.nombre}</span></div>
-      <div className="actions"><Link className="button" to="/consultar">Consultar solicitud</Link><button className="button secondary" onClick={() => { setResult(null); setForm(initialForm) }}>Nueva solicitud</button></div>
+      <div className="actions"><button className="button secondary" onClick={() => descargarComprobante(result)}>Descargar comprobante</button><Link className="button" to="/consultar">Consultar solicitud</Link><button className="button secondary" onClick={() => { setResult(null); setForm(initialForm) }}>Nueva solicitud</button></div>
     </div>
   </section>
 

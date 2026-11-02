@@ -22,6 +22,11 @@ class ErrorMiddleware {
       return res.status(400).json({ error: 'El cuerpo de la peticion no es JSON valido' });
     }
 
+    const traducido = ErrorMiddleware.traducirSequelize(err);
+    if (traducido) {
+      return res.status(traducido.status).json({ error: traducido.error });
+    }
+
     const status = Number.isInteger(err.status) ? err.status : 500;
 
     if (status >= 500 && !Config.isTest) {
@@ -34,6 +39,30 @@ class ErrorMiddleware {
       : err.message || 'Error interno del servidor';
 
     return res.status(status).json({ error: message });
+  }
+
+  /**
+   * Convierte errores del ORM en respuestas del contrato:
+   *   validacion del modelo     -> 400 (primer mensaje)
+   *   valor unico repetido      -> 409
+   *   llave foranea (RESTRICT)  -> 409 (registro en uso) / 400 (referencia inexistente)
+   * @returns {{ status: number, error: string } | null}
+   */
+  static traducirSequelize(err) {
+    switch (err.name) {
+      case 'SequelizeValidationError':
+        return { status: 400, error: err.errors?.[0]?.message || 'Datos invalidos' };
+      case 'SequelizeUniqueConstraintError': {
+        const campo = err.errors?.[0]?.path;
+        return { status: 409, error: campo ? `Ya existe un registro con ese ${campo}` : 'Registro duplicado' };
+      }
+      case 'SequelizeForeignKeyConstraintError':
+        return /^\s*DELETE/i.test(err.sql || err.parent?.sql || '')
+          ? { status: 409, error: 'No se puede eliminar: el registro esta en uso' }
+          : { status: 400, error: 'Alguno de los catalogos seleccionados no existe' };
+      default:
+        return null;
+    }
   }
 }
 

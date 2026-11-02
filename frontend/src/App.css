@@ -42,6 +42,8 @@
 .captcha { display: flex !important; grid-template-columns: auto 1fr; align-items: center; gap: .6rem !important; padding: .75rem; border: 1px solid #cbd5e1; border-radius: .4rem; font-weight: 400 !important; }
 .captcha input { width: auto; }
 .captcha-widget { min-height: 78px; }
+.field-error { color: #b42318; font-size: .78rem; font-weight: 400; }
+input[aria-invalid="true"], select[aria-invalid="true"] { border-color: #b42318; outline-color: #b42318; }
 @media (max-width: 700px) { .stat-grid, .catalog-grid { grid-template-columns: 1fr; } }
 @media (max-width: 700px) { .form-grid { grid-template-columns: 1fr; } }
 @media (max-width: 700px) { .toolbar { align-items: stretch; flex-direction: column; } .toolbar label, .toolbar input, .toolbar select, .toolbar .button { width: 100%; } .result-heading { flex-direction: column; } .result-card dl div { align-items: flex-start; flex-direction: column; gap: .2rem; } .result-card dd { text-align: left; } }

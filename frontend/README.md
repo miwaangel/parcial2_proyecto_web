@@ -25,3 +25,9 @@ npm run build
 Flujo manual de humo: solicitar un turno, consultarlo por CURP y turno,
 modificarlo, iniciar sesión, revisar el dashboard, cambiar el estatus de una
 solicitud y crear/editar/desactivar un catálogo.
+
+Los formularios validan en cliente y servidor: CURP de 18 caracteres con fecha,
+sexo, entidad y consonantes internas consistentes; nombres con caracteres
+permitidos; teléfonos de exactamente 10 dígitos; correo electrónico; catálogos
+obligatorios y turnos enteros positivos. El backend siempre repite estas
+validaciones para no confiar en datos enviados desde el navegador.

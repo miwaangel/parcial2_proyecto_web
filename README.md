@@ -56,6 +56,11 @@ npm run dev
 
 Credenciales de demostración con mocks: `admin` / `admin123`.
 
+Los datos se validan en las dos capas. La CURP debe tener 18 caracteres y una
+fecha, sexo, entidad federativa y consonantes internas consistentes; los
+teléfonos aceptan únicamente 10 dígitos; nombres, correo, catálogos y turno
+también tienen validaciones de formato, longitud y obligatoriedad.
+
 ## Flujo de trabajo
 1. Cada quien trabaja en su rama (`miwa`, `orlando`, `alanis`).
 2. Antes de empezar: `git pull origin develop`.

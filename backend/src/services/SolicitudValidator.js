@@ -4,6 +4,7 @@ const REGEX_CURP = /^[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]\d$/;
 const REGEX_NOMBRE = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' .-]+$/;
 const REGEX_CORREO = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/;
 const REGEX_TELEFONO = /^\d{10}$/;
+const ENTIDADES_CURP = new Set('AS BC BS CC CS CH CL CM CT DF DG GT GR HG JC MC MN MS NT NL OC PL QT QR SP SL SR TC TL VZ YN ZS NE'.split(' '));
 
 /**
  * Valida y normaliza los datos de una Solicitud (issues #13 y #14).
@@ -116,7 +117,9 @@ class SolicitudValidator {
     if (maximo && valor.length > maximo) error(`admite maximo ${maximo} caracteres`);
     switch (tipo) {
       case 'curp':
-        if (!REGEX_CURP.test(valor)) error('no tiene un formato valido (18 caracteres)');
+        if (!REGEX_CURP.test(valor) || !SolicitudValidator.curpConsistente(valor)) {
+          error('no tiene un formato valido: usa 18 caracteres, fecha, sexo y entidad validos');
+        }
         break;
       case 'nombre':
         if (valor.length < 2) error('debe tener al menos 2 letras');
@@ -133,6 +136,20 @@ class SolicitudValidator {
         break;
       default:
     }
+  }
+
+  static curpConsistente(curp) {
+      const mes = Number(curp.slice(6, 8));
+      const dia = Number(curp.slice(8, 10));
+      const anio = Number(curp.slice(4, 6));
+      const siglo = /[A-Z]/.test(curp[16]) ? 2000 : 1900;
+      const fecha = new Date(Date.UTC(siglo + anio, mes - 1, dia));
+      const fechaValida = mes >= 1 && mes <= 12 && dia >= 1 && dia <= 31
+        && fecha.getUTCFullYear() === siglo + anio
+        && fecha.getUTCMonth() === mes - 1
+        && fecha.getUTCDate() === dia;
+      const consonantes = /^[BCDFGHJKLMNÑPQRSTVWXYZ]{3}$/.test(`${curp[13]}${curp[14]}${curp[15]}`);
+      return fechaValida && ENTIDADES_CURP.has(curp.slice(11, 13)) && consonantes;
   }
 }
 

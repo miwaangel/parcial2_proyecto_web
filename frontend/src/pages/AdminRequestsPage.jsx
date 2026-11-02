@@ -7,12 +7,13 @@ const empty = { curp: '', nombreCompleto: '', nombre: '', paterno: '', materno: 
 export default function AdminRequestsPage() {
   const [items, setItems] = useState([]); const [filters, setFilters] = useState({ q: '', estatus: '' })
   const [municipios, setMunicipios] = useState([]); const [editing, setEditing] = useState(null); const [error, setError] = useState('')
+  const { q, estatus } = filters
   async function load() { try { setItems(await listarSolicitudes(filters)) } catch (err) { setError(err.message) } }
   useEffect(() => {
     let active = true
-    listarSolicitudes(filters).then((data) => { if (active) setItems(data) }).catch((err) => { if (active) setError(err.message) })
+    listarSolicitudes({ q, estatus }).then((data) => { if (active) setItems(data) }).catch((err) => { if (active) setError(err.message) })
     return () => { active = false }
-  }, [filters.q, filters.estatus])
+  }, [q, estatus])
   useEffect(() => { listarCatalogo('municipios', true).then(setMunicipios).catch((err) => setError(err.message)) }, [])
   async function status(item) { try { await cambiarEstatus(item.id, item.estatus === 'Pendiente' ? 'Resuelto' : 'Pendiente'); load() } catch (err) { setError(err.message) } }
   async function remove(item) { if (!window.confirm(`¿Eliminar la solicitud de ${item.nombreCompleto}?`)) return; try { await eliminarSolicitud(item.id); load() } catch (err) { setError(err.message) } }

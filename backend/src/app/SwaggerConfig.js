@@ -33,7 +33,9 @@ class SwaggerConfig {
         ],
         components: SwaggerConfig.componentes(),
       },
-      apis: [path.join(__dirname, '../routes/*.js')],
+      // swagger-jsdoc recibe el patrón como glob; normalizarlo evita que
+      // las rutas se ignoren en Windows por los separadores invertidos.
+      apis: [path.join(__dirname, '../routes/*.js').replace(/\\/g, '/')],
     });
   }
 

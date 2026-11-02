@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { CaptchaField } from '../components/CaptchaField'
 
 export default function LoginPage() {
   const [form, setForm] = useState({ usuario: '', password: '' })
@@ -8,6 +9,7 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const { login } = useAuth()
   const navigate = useNavigate()
+  const handleCaptcha = useCallback((token) => setCaptcha(Boolean(token)), [])
   async function submit(event) {
     event.preventDefault(); setError('')
     if (!captcha) { setError('Confirma que no eres un robot'); return }
@@ -17,7 +19,7 @@ export default function LoginPage() {
     <form className="card form" onSubmit={submit}>
       <label>Usuario<input required value={form.usuario} onChange={(e) => setForm({ ...form, usuario: e.target.value })} /></label>
       <label>Contraseña<input required type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} /></label>
-      <label className="captcha"><input type="checkbox" checked={captcha} onChange={(e) => setCaptcha(e.target.checked)} /> No soy un robot</label>
+      <CaptchaField onChange={handleCaptcha} />
       {error && <p className="error">{error}</p>}<button className="button" type="submit">Entrar</button>
     </form>
   </section>

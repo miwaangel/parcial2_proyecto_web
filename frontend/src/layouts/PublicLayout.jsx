@@ -1,7 +1,9 @@
+import { Component } from 'react'
 import { Link, Outlet } from 'react-router-dom'
 
-export function PublicLayout() {
-  return (
+export class PublicLayout extends Component {
+  render() {
+    return (
     <div className="app-shell">
       <header className="public-header">
         <Link className="brand" to="/">Ticket de turno</Link>
@@ -14,5 +16,6 @@ export function PublicLayout() {
       <main className="content"><Outlet /></main>
       <footer>Servicio de solicitudes por municipio</footer>
     </div>
-  )
+    )
+  }
 }

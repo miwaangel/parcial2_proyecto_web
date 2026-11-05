@@ -1,8 +1,17 @@
+import { Component } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { AuthContext } from '../context/AuthContext'
+
+class ProtectedRouteView extends Component {
+  static contextType = AuthContext
+
+  render() {
+    const { session } = this.context
+    return session ? <Outlet /> : <Navigate to="/login" replace state={{ from: this.props.location }} />
+  }
+}
 
 export function ProtectedRoute() {
-  const { session } = useAuth()
   const location = useLocation()
-  return session ? <Outlet /> : <Navigate to="/login" replace state={{ from: location }} />
+  return <ProtectedRouteView location={location} />
 }

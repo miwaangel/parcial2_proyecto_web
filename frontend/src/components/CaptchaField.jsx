@@ -1,20 +1,23 @@
-import { useEffect, useRef, useState } from 'react'
+import { Component } from 'react'
 
 const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY
 
-export function CaptchaField({ onChange }) {
-  const container = useRef(null)
-  const [fallback, setFallback] = useState(!siteKey)
+export class CaptchaField extends Component {
+  constructor(props) {
+    super(props)
+    this.container = null
+    this.state = { fallback: !siteKey }
+  }
 
-  useEffect(() => {
+  componentDidMount() {
     if (!siteKey) return undefined
     // El api.js de Google carga en dos etapas: grecaptcha.render() no existe hasta
     // que Google avisa con grecaptcha.ready(). Llamarlo antes deja el widget vacio.
     const render = () => {
-      const el = container.current
+      const el = this.container
       if (!el || el.dataset.renderizado) return // evita doble render (StrictMode / remontaje)
       el.dataset.renderizado = 'si'
-      window.grecaptcha.render(el, { sitekey: siteKey, callback: onChange, 'expired-callback': () => onChange('') })
+      window.grecaptcha.render(el, { sitekey: siteKey, callback: this.props.onChange, 'expired-callback': () => this.props.onChange('') })
     }
     const cuandoEsteListo = () => window.grecaptcha.ready(render)
 
@@ -30,14 +33,15 @@ export function CaptchaField({ onChange }) {
       script.defer = true
       script.dataset.recaptcha = 'true'
       script.onload = cuandoEsteListo
-      script.onerror = () => setFallback(true)
+      script.onerror = () => this.setState({ fallback: true })
       document.head.appendChild(script)
     }
-    return undefined
-  }, [onChange])
-
-  if (fallback) {
-    return <label className="captcha"><input type="checkbox" onChange={(event) => onChange(event.target.checked ? 'mock-captcha' : '')} /> No soy un robot</label>
   }
-  return <div ref={container} className="captcha-widget" />
+
+  render() {
+    if (this.state.fallback) {
+      return <label className="captcha"><input type="checkbox" onChange={(event) => this.props.onChange(event.target.checked ? 'mock-captcha' : '')} /> No soy un robot</label>
+    }
+    return <div ref={(element) => { this.container = element }} className="captcha-widget" />
+  }
 }

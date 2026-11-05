@@ -1,5 +1,10 @@
 # Frontend — Ticket de turno
 
+La interfaz está implementada con componentes de clase de React y servicios
+orientados a objetos. Cada página encapsula su estado y ciclo de vida mediante
+`Component`; los servicios (`SolicitudService`, `CatalogoService`,
+`AuthService` y `EstadisticasService`) encapsulan la comunicación con la API. — Ticket de turno
+
 ## Desarrollo local
 
 ```bash

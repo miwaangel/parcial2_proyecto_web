@@ -11,10 +11,16 @@ Proyecto del Parcial 2 — Desarrollo de Aplicaciones Web.
 | Alanis (`Angel-Alanis`) | Frontend |
 
 ## Stack
-- **Frontend:** React (Vite)
+- **Frontend:** React (Vite), con componentes de clase y servicios orientados a objetos
 - **Backend:** Node.js + Express, arquitectura MVC orientada a objetos
 - **Base de datos:** MySQL con Sequelize (ORM)
 - **Patrones de diseño:** Singleton (`backend/src/config/Database.js`), Factory (`backend/src/services/documentos/DocumentoFactory.js`)
+
+La interfaz React usa componentes de clase (`Component`) para encapsular estado,
+ciclo de vida y comportamiento. La comunicación con la API está encapsulada en
+servicios de clase como `SolicitudService`, `CatalogoService`, `AuthService` y
+`EstadisticasService`; los adaptadores pequeños que conectan React Router con
+componentes de clase únicamente inyectan navegación o ubicación.
 
 ## Estructura
 ```

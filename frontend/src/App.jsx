@@ -1,7 +1,8 @@
+import { Component } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
-import { AdminLayout } from './layouts/AdminLayout'
+import { AdminLayoutWithNavigation } from './layouts/AdminLayout'
 import { PublicLayout } from './layouts/PublicLayout'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
@@ -13,8 +14,9 @@ import AdminRequestsPage from './pages/AdminRequestsPage'
 import AdminCatalogsPage from './pages/AdminCatalogsPage'
 import './App.css'
 
-function App() {
-  return (
+class App extends Component {
+  render() {
+    return (
     <AuthProvider>
       <Routes>
         <Route element={<PublicLayout />}>
@@ -25,7 +27,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
         </Route>
         <Route element={<ProtectedRoute />}>
-          <Route element={<AdminLayout />}>
+          <Route element={<AdminLayoutWithNavigation />}>
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/admin/solicitudes" element={<AdminRequestsPage />} />
             <Route path="/admin/catalogos" element={<AdminCatalogsPage />} />
@@ -34,7 +36,8 @@ function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AuthProvider>
-  )
+    )
+  }
 }
 
 export default App

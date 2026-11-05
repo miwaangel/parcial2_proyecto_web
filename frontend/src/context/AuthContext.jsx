@@ -1,34 +1,33 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useMemo, useState } from 'react'
+import { Component, createContext } from 'react'
 import { login as loginRequest } from '../services/authService'
 
-const AuthContext = createContext(null)
+export const AuthContext = createContext(null)
 
-export function AuthProvider({ children }) {
-  const [session, setSession] = useState(() => {
+export class AuthProvider extends Component {
+  constructor(props) {
+    super(props)
     const token = localStorage.getItem('ticket-token')
     const usuario = JSON.parse(localStorage.getItem('ticket-user') || 'null')
-    return token && usuario ? { token, usuario } : null
-  })
+    this.state = { session: token && usuario ? { token, usuario } : null }
+  }
 
-  const value = useMemo(() => ({
-    session,
-    async login(usuario, password, captchaToken) {
+  login = async (usuario, password, captchaToken) => {
       const result = await loginRequest(usuario, password, captchaToken)
       localStorage.setItem('ticket-token', result.token)
       localStorage.setItem('ticket-user', JSON.stringify(result.usuario))
-      setSession(result)
-    },
-    logout() {
+      this.setState({ session: result })
+    }
+
+  logout = () => {
       localStorage.removeItem('ticket-token')
       localStorage.removeItem('ticket-user')
-      setSession(null)
-    },
-  }), [session])
+      this.setState({ session: null })
+    }
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
-
-export function useAuth() {
-  return useContext(AuthContext)
+  render() {
+    return <AuthContext.Provider value={{ session: this.state.session, login: this.login, logout: this.logout }}>
+      {this.props.children}
+    </AuthContext.Provider>
+  }
 }

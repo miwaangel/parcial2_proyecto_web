@@ -9,10 +9,22 @@ const azar = (lista) => lista[Math.floor(Math.random() * lista.length)];
 const letra = () => azar(LETRAS.split(''));
 const digitos = (n) => Array.from({ length: n }, () => Math.floor(Math.random() * 10)).join('');
 
-// CURP con formato válido (no real): 4 letras + 6 dígitos + H/M + 5 letras + 1 alfanumérico + 1 dígito
+const VOCALES = 'AEIOU';
+const CONSONANTES = 'BCDFGHJKLMNPQRSTVWXYZ';
+const ENTIDADES = ['AS', 'BC', 'CL', 'CH', 'DF', 'DG', 'GT', 'JC', 'MC', 'NL', 'QT', 'SP', 'SL', 'TS', 'ZS'];
+const vocal = () => azar(VOCALES.split(''));
+const consonante = () => azar(CONSONANTES.split(''));
+const dosDigitos = (min, max) => String(min + Math.floor(Math.random() * (max - min + 1))).padStart(2, '0');
+
+// CURP de prueba (no real) que cumple la validacion completa del sistema:
+// letra + vocal + 2 letras, fecha valida (2005-2015), H/M, entidad real,
+// 3 consonantes internas, homoclave letra (nacidos 2000+) y digito verificador.
 const curpFalsa = () =>
-  letra() + letra() + letra() + letra() + digitos(6) + azar(['H', 'M']) +
-  letra() + letra() + letra() + letra() + letra() + letra() + digitos(1);
+  letra() + vocal() + letra() + letra()
+  + dosDigitos(5, 15) + dosDigitos(1, 12) + dosDigitos(1, 28)
+  + azar(['H', 'M']) + azar(ENTIDADES)
+  + consonante() + consonante() + consonante()
+  + letra() + digitos(1);
 
 module.exports = {
   async up(queryInterface) {

@@ -15,6 +15,22 @@ class Config {
     return process.env.CORS_ORIGIN || 'http://localhost:5173';
   }
 
+  static get jwtSecret() {
+    const secret = process.env.JWT_SECRET;
+    if (!secret && Config.isProduction) {
+      throw new Error('JWT_SECRET es obligatorio en produccion');
+    }
+    return secret || 'secreto_solo_para_desarrollo';
+  }
+
+  static get jwtExpiresIn() {
+    return process.env.JWT_EXPIRES_IN || '8h';
+  }
+
+  static get recaptchaSecret() {
+    return process.env.RECAPTCHA_SECRET || '';
+  }
+
   static get env() {
     return process.env.NODE_ENV || 'development';
   }

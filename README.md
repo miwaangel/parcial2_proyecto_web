@@ -14,7 +14,7 @@ Proyecto del Parcial 2 — Desarrollo de Aplicaciones Web.
 - **Frontend:** React (Vite)
 - **Backend:** Node.js + Express, arquitectura MVC orientada a objetos
 - **Base de datos:** MySQL con Sequelize (ORM)
-- **Patrones de diseño:** Singleton (conexión a BD), Factory (generación de comprobantes)
+- **Patrones de diseño:** Singleton (`backend/src/config/Database.js`), Factory (`backend/src/services/documentos/DocumentoFactory.js`)
 
 ## Estructura
 ```
@@ -26,36 +26,50 @@ docs/       Contrato de API y documentación
 Antes de programar, leer **[docs/contrato-api.md](docs/contrato-api.md)**.
 
 ## Cómo correrlo
-En desarrollo, el frontend puede ejecutarse con mocks para probar el flujo
-completo sin una base de datos. Para integración real, configura MySQL y usa
-`VITE_USE_MOCKS=false`.
 
+### Requisitos
+- Node.js 20.19 o superior (`node -v`)
+- MySQL encendido: XAMPP (Windows) o Docker / MySQL (Linux)
+
+### 1. Backend (API) — terminal 1
 ```bash
-# Backend
 cd backend
 npm install
-cp .env.example .env   # y llenar los datos
-npm run dev
-
-# Frontend
-cd frontend
-npm install
-npm run dev
+cp .env.example .env          # Windows: Copy-Item .env.example .env
 ```
-
-En otra terminal:
-
+Edita `backend/.env` con tu usuario de MySQL (`DB_USER`, `DB_PASSWORD`; en XAMPP: `root` y vacío). Luego:
 ```bash
-# Frontend
+npm run db:create             # crea la base ticket_turno
+npm run db:migrate            # crea las tablas
+npm run db:seed               # 38 municipios, niveles, asuntos, admin y 60 solicitudes de ejemplo
+npm run dev                   # API en http://localhost:3000/api
+```
+Para volver a dejar la base como nueva: `npm run db:reset`.
+
+### 2. Frontend — terminal 2
+```bash
 cd frontend
 npm install
-copy .env.example .env
-# Para demo local cambia VITE_USE_MOCKS=true
-npm run dev
+cp .env.example .env          # Windows: Copy-Item .env.example .env
+npm run dev                   # http://localhost:5173
 ```
+El `.env.example` ya viene listo para usar la API real (`VITE_USE_MOCKS=false`) y la llave de prueba de reCAPTCHA.
+Para probar el front **sin** backend: `VITE_USE_MOCKS=true` (usuario `admin` / `admin123`).
 
-Credenciales de demostración con mocks: `admin` / `admin123`.
+### 3. Probar
+| Qué | Dónde |
+|---|---|
+| Sitio público (solicitar, consultar, modificar) | http://localhost:5173 |
+| Panel de administración | http://localhost:5173/login — usuario **`admin`**, contraseña **`Admin123!`** |
+| Documentación de la API (Swagger) | http://localhost:3000/api/docs |
+| Pruebas automáticas del backend (no necesitan MySQL) | `cd backend && npm test` |
 
+### reCAPTCHA
+Los `.env.example` traen las llaves **de prueba** de Google (siempre aprueban; el widget muestra un aviso de pruebas).
+Para usar llaves reales: registrar el sitio en https://www.google.com/recaptcha/admin (v2 "No soy un robot", dominio `localhost`) y poner
+la clave del sitio en `frontend/.env` → `VITE_RECAPTCHA_SITE_KEY` y la clave secreta en `backend/.env` → `RECAPTCHA_SECRET`.
+
+### Validaciones
 Los datos se validan en las dos capas. La CURP debe tener 18 caracteres y una
 fecha, sexo, entidad federativa y consonantes internas consistentes; los
 teléfonos aceptan únicamente 10 dígitos; nombres, correo, catálogos y turno
@@ -70,17 +84,7 @@ también tienen validaciones de formato, longitud y obligatoriedad.
 
 ## Base de datos
 
-Requisitos: MySQL encendido (XAMPP).
-
-```bash
-cd backend
-npm install
-cp .env.example .env      # en Windows: Copy-Item .env.example .env
-npm run db:create         # crea la base ticket_turno
-npm run db:migrate        # crea las tablas
-npm run db:seed           # datos iniciales (municipios, admin)
-npm run db:test           # prueba la conexión
-```
+Comandos en `backend/` (ver **Cómo correrlo**): `db:create`, `db:migrate`, `db:seed`, `db:reset`, `db:test` (prueba la conexión) y `db:test-turnos` (prueba de turnos simultáneos).
 
 ### Patrón Singleton
 `backend/src/config/Database.js` crea **una sola** conexión de Sequelize para toda la aplicación.

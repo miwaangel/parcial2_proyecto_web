@@ -1,0 +1,71 @@
+# Levanta todo el proyecto con un solo comando:
+#   docker compose up --build
+# Sitio: http://localhost:5173   API: http://localhost:3000/api   Swagger: http://localhost:3000/api/docs
+# Admin: admin / Admin123!
+#
+# Opcional: copia .env.docker.example a .env (en esta misma carpeta) para cambiar
+# puertos, llaves de reCAPTCHA o el secreto del JWT. Sin ese archivo usa los valores de abajo.
+
+name: ticket-turno
+
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: ticket_turno
+      MYSQL_USER: turno
+      MYSQL_PASSWORD: turno123
+      TZ: America/Monterrey
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - datos_mysql:/var/lib/mysql
+    healthcheck:
+      # Por TCP: durante la inicializacion MySQL no escucha en red, asi la API
+      # no intenta migrar hasta que el servidor definitivo este listo.
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uturno", "-pturno123"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  api:
+    build: ./backend
+    restart: on-failure
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      CORS_ORIGIN: http://localhost:${WEB_PORT:-5173}
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ticket_turno
+      DB_USER: turno
+      DB_PASSWORD: turno123
+      JWT_SECRET: ${JWT_SECRET:-cambia_este_secreto_por_un_texto_largo}
+      JWT_EXPIRES_IN: 8h
+      # Llave secreta de PRUEBA de Google por defecto (siempre aprueba)
+      RECAPTCHA_SECRET: ${RECAPTCHA_SECRET:-6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe}
+      SEED_ADMIN_USER: admin
+      SEED_ADMIN_PASSWORD: Admin123!
+    ports:
+      - "${API_PORT:-3000}:3000"
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        # El navegador llama a la API desde tu computadora, por eso es localhost
+        VITE_API_URL: http://localhost:${API_PORT:-3000}/api
+        # Llave publica de PRUEBA de Google por defecto
+        VITE_RECAPTCHA_SITE_KEY: ${RECAPTCHA_SITE_KEY:-6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI}
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "${WEB_PORT:-5173}:80"
+
+volumes:
+  datos_mysql:

@@ -27,6 +27,23 @@ Antes de programar, leer **[docs/contrato-api.md](docs/contrato-api.md)**.
 
 ## Cómo correrlo
 
+### Opción rápida: con Docker (todo en un comando)
+Solo necesitas Docker con Docker Compose. Levanta MySQL, la API y el sitio; crea las tablas y carga los datos de ejemplo la primera vez.
+```bash
+docker compose up --build        # la primera vez tarda unos minutos
+```
+| Qué | Dónde |
+|---|---|
+| Sitio | http://localhost:5173 |
+| Panel de administración | http://localhost:5173/login — `admin` / `Admin123!` |
+| Swagger | http://localhost:3000/api/docs |
+
+- Apagar: `Ctrl+C` o `docker compose down`. Borrar también los datos: `docker compose down -v`.
+- Puertos ocupados, llaves reales de reCAPTCHA o secreto del JWT: `cp .env.docker.example .env` en la raíz y edítalo (nunca se sube a GitHub). Después: `docker compose up --build`.
+- Si ya tienes `npm run dev` corriendo, detenlo antes: usan los mismos puertos (3000 y 5173).
+
+### Opción manual (sin Docker)
+
 ### Requisitos
 - Node.js 20.19 o superior (`node -v`)
 - MySQL encendido: XAMPP (Windows) o Docker / MySQL (Linux)

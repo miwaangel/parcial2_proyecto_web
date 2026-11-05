@@ -13,7 +13,7 @@ export default function LoginPage() {
   async function submit(event) {
     event.preventDefault(); setError('')
     if (!captchaToken) { setError('Confirma que no eres un robot'); return }
-    try { await login(form.usuario, form.password, captchaToken); navigate('/admin') } catch (err) { setError(err.message) }
+    try { await login(form.usuario, form.password, captchaToken); navigate('/admin') } catch (err) { setError(err.message); window.grecaptcha?.reset(); setCaptchaToken('') }
   }
   return <section className="form-page narrow"><h1>Acceso administrativo</h1><p className="muted">Usa las credenciales configuradas para tu entorno.</p>
     <form className="card form" onSubmit={submit}>

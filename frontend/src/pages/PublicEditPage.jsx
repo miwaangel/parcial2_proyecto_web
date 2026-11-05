@@ -5,18 +5,21 @@ import { descargarComprobante } from '../services/comprobanteService'
 import { SolicitudResult } from './PublicSearchPage'
 import { validateSolicitud } from '../utils/validation'
 
+// La API regresa municipio/nivel/asunto como objetos; el formulario necesita sus ids
+const aFormulario = (s) => s && ({ ...s, municipioId: s.municipio?.id, nivelId: s.nivel?.id, asuntoId: s.asunto?.id })
+
 export default function PublicEditPage() {
   const location = useLocation()
   const [lookup, setLookup] = useState({ curp: '', turno: '' })
   const [solicitud, setSolicitud] = useState(location.state?.solicitud || null)
-  const [form, setForm] = useState(location.state?.solicitud || {})
+  const [form, setForm] = useState(aFormulario(location.state?.solicitud) || {})
   const [error, setError] = useState('')
   const [saved, setSaved] = useState(false)
   const [fieldErrors, setFieldErrors] = useState({})
 
   async function find(event) {
     event.preventDefault(); setError(''); setSaved(false)
-    try { const found = await buscarSolicitud({ ...lookup, curp: lookup.curp.toUpperCase() }); setSolicitud(found); setForm(found) } catch (err) { setError(err.message) }
+    try { const found = await buscarSolicitud({ ...lookup, curp: lookup.curp.toUpperCase() }); setSolicitud(found); setForm(aFormulario(found)) } catch (err) { setError(err.message) }
   }
   async function save(event) {
     event.preventDefault(); setError('')

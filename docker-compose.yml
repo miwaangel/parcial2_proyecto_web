@@ -1,0 +1,23 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ticket_turno_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: ticket_turno
+      MYSQL_USER: turno
+      MYSQL_PASSWORD: turno123
+      TZ: America/Monterrey
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_datos:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uturno", "-pturno123"]
+      interval: 5s
+      retries: 10
+
+volumes:
+  mysql_datos:

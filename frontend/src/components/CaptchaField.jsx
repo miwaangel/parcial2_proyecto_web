@@ -8,21 +8,28 @@ export function CaptchaField({ onChange }) {
 
   useEffect(() => {
     if (!siteKey) return undefined
+    // El api.js de Google carga en dos etapas: grecaptcha.render() no existe hasta
+    // que Google avisa con grecaptcha.ready(). Llamarlo antes deja el widget vacio.
     const render = () => {
-      if (window.grecaptcha && container.current) {
-        window.grecaptcha.render(container.current, { sitekey: siteKey, callback: onChange, 'expired-callback': () => onChange('') })
-      }
+      const el = container.current
+      if (!el || el.dataset.renderizado) return // evita doble render (StrictMode / remontaje)
+      el.dataset.renderizado = 'si'
+      window.grecaptcha.render(el, { sitekey: siteKey, callback: onChange, 'expired-callback': () => onChange('') })
     }
+    const cuandoEsteListo = () => window.grecaptcha.ready(render)
+
     const existing = document.querySelector('script[data-recaptcha]')
-    if (existing) {
-      window.grecaptcha?.ready(render)
+    if (window.grecaptcha?.ready) {
+      cuandoEsteListo()
+    } else if (existing) {
+      existing.addEventListener('load', cuandoEsteListo, { once: true })
     } else {
       const script = document.createElement('script')
       script.src = 'https://www.google.com/recaptcha/api.js?render=explicit'
       script.async = true
       script.defer = true
       script.dataset.recaptcha = 'true'
-      script.onload = render
+      script.onload = cuandoEsteListo
       script.onerror = () => setFallback(true)
       document.head.appendChild(script)
     }

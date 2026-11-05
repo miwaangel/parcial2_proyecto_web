@@ -1,4 +1,4 @@
-const CURP_ENTITIES = new Set('AS BC BS CC CS CH CL CM CT DF DG GT GR HG JC MC MN MS NT NL OC PL QT QR SP SL SR TC TL VZ YN ZS NE'.split(' '))
+const CURP_ENTITIES = new Set('AS BC BS CC CS CH CL CM CT DF DG GT GR HG JC MC MN MS NT NL OC PL QT QR SP SL SR TC TS TL VZ YN ZS NE'.split(' '))
 const CURP_PATTERN = /^[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]\d$/
 const NAME_PATTERN = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' .-]+$/
 

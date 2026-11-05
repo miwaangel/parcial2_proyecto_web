@@ -4,7 +4,7 @@ const REGEX_CURP = /^[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]\d$/;
 const REGEX_NOMBRE = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' .-]+$/;
 const REGEX_CORREO = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/;
 const REGEX_TELEFONO = /^\d{10}$/;
-const ENTIDADES_CURP = new Set('AS BC BS CC CS CH CL CM CT DF DG GT GR HG JC MC MN MS NT NL OC PL QT QR SP SL SR TC TL VZ YN ZS NE'.split(' '));
+const ENTIDADES_CURP = new Set('AS BC BS CC CS CH CL CM CT DF DG GT GR HG JC MC MN MS NT NL OC PL QT QR SP SL SR TC TS TL VZ YN ZS NE'.split(' '));
 
 /**
  * Valida y normaliza los datos de una Solicitud (issues #13 y #14).

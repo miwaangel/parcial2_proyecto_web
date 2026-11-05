@@ -10,7 +10,7 @@ export function CaptchaField({ onChange }) {
     if (!siteKey) return undefined
     const render = () => {
       if (window.grecaptcha && container.current) {
-        window.grecaptcha.render(container.current, { sitekey: siteKey, callback: onChange })
+        window.grecaptcha.render(container.current, { sitekey: siteKey, callback: onChange, 'expired-callback': () => onChange('') })
       }
     }
     const existing = document.querySelector('script[data-recaptcha]')

@@ -5,15 +5,15 @@ import { CaptchaField } from '../components/CaptchaField'
 
 export default function LoginPage() {
   const [form, setForm] = useState({ usuario: '', password: '' })
-  const [captcha, setCaptcha] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState('')
   const [error, setError] = useState('')
   const { login } = useAuth()
   const navigate = useNavigate()
-  const handleCaptcha = useCallback((token) => setCaptcha(Boolean(token)), [])
+  const handleCaptcha = useCallback((token) => setCaptchaToken(token || ''), [])
   async function submit(event) {
     event.preventDefault(); setError('')
-    if (!captcha) { setError('Confirma que no eres un robot'); return }
-    try { await login(form.usuario, form.password, 'mock-captcha'); navigate('/admin') } catch (err) { setError(err.message) }
+    if (!captchaToken) { setError('Confirma que no eres un robot'); return }
+    try { await login(form.usuario, form.password, captchaToken); navigate('/admin') } catch (err) { setError(err.message); window.grecaptcha?.reset(); setCaptchaToken('') }
   }
   return <section className="form-page narrow"><h1>Acceso administrativo</h1><p className="muted">Usa las credenciales configuradas para tu entorno.</p>
     <form className="card form" onSubmit={submit}>
